@@ -41,8 +41,6 @@
 # author_id int
 # }
 
-import pymysql.err as err
-
 debug = False
 
 class Article(object):
