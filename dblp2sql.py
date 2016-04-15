@@ -147,6 +147,7 @@ def main(file):
 
 
     logfile = 'log.txt'
+    progresstrace = 'progress.txt'
 
     with open(logfile,'w+') as log:
         log.write('')
@@ -177,48 +178,48 @@ def main(file):
                     log.writelines('pymysql.err.IntegrityError: ' + 'at line: ' + str(linenum)+'\n')
                     log.write(article)
                 itemfailnum+=1
-                print("commit fail!")
+                # print("commit fail!")
             except AttributeError as e:
                 with open(logfile, 'a+') as log:
                     log.writelines('AttributeError: ' + 'at line: ' + str(linenum) + '\n')
                     log.write(article)
                 itemfailnum+=1
-                print("commit fail!")
+                # print("commit fail!")
             except TypeError as e:
                 with open(logfile,'a+') as log:
                     log.writelines('TypeError: ' + ' at line: ' + str(linenum))
                     log.write(article)
                 itemfailnum+=1
-                print("commit fail!")
+                # print("commit fail!")
             except _exceptions.SAXParseException as e:
                 with open(logfile, 'a+') as log:
                     log.writelines('_exceptions.SAXParseException:'+e.getMessage()+'; line: '+str(linenum)+'; sline: '+str(e.getLineNumber())+'\n')
                     log.write(article)
                 itemfailnum+=1
-                print("commit fail!")
+                # print("commit fail!")
             except _exceptions.SAXNotSupportedException as e:
                 with open(logfile, 'a+') as log:
                     log.writelines('_exceptions.SAXNotSupportedException: ' + e.getMessage() + '; line: ' + str(linenum) + '; sline: ' + str(e.getLineNumber())+'\n')
                     log.write(article)
                 itemfailnum+=1
-                print("commit fail!")
+                # print("commit fail!")
             except _exceptions.SAXException as e:
                 with open(logfile, 'a+') as log:
                     log.writelines('_exceptions.SAXNotSupportedException: ' + e.getMessage() + '; line: ' + str(linenum) + '; sline: ' + str(e.getLineNumber())+'\n')
                     log.write(article)
                 itemfailnum+=1
-                print("commit fail!")
+                # print("commit fail!")
             except Exception as e:
                 with open(logfile, 'a+') as log:
                     log.writelines('Exception: ' + ' at line: ' + str(linenum) + '\n')
                     log.write(article)
                 itemfailnum+=1
-                print("commit fail!")
+                # print("commit fail!")
             else:
                 # print("commit successful!")
                 itemtotalnum = itemgoodnum + itemfailnum
-                print('('+str(linenum)+'/'+str(linenumtotal)+', '+str(100*float(linenum)/linenumtotal)+'%, '+str(100*float(itemfailnum)/itemtotalnum)+'%'+')')
-                pass
+                with open(progresstrace,'w+') as progress:
+                    progress.write('('+str(linenum)+'/'+str(linenumtotal)+', '+str(100*float(linenum)/linenumtotal)+'%, '+str(100*float(itemfailnum)/itemtotalnum)+'%'+')')
             finally:
                 # print(text)
                 pass
