@@ -1,0 +1,6 @@
+dblp.xml
+log.txt
+__pycache__/
+.idea/
+ENV/
+env/
