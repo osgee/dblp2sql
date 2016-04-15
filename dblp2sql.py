@@ -220,8 +220,8 @@ def main(file):
                 print('('+str(linenum)+'/'+str(linenumtotal)+', '+str(100*float(linenum)/linenumtotal)+'%, '+str(100*float(itemfailnum)/itemtotalnum)+'%'+')')
                 pass
             finally:
-                print(text)
-
+                # print(text)
+                pass
     # parseString(data, ArticleHandler(conn))
     f.close()
     conn.close()
