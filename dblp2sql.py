@@ -158,14 +158,14 @@ def main(file):
     in_article = False
 
     article = ''
-    
+
     for l in lines:
         linenum += 1
         if not in_article:
             article = ''
         if m1.search(l):
             # print(l)
-            article = '<?xml version="1.0" encoding="iso-8859-1" ?>\n<!DOCTYPE dblp SYSTEM "dblp.dtd">'
+            article = '<?xml version="1.0" encoding="iso-8859-1" ?>\n<!DOCTYPE dblp SYSTEM "dblp.dtd">\n'
             in_article = True
         if in_article:
             article = article + l
@@ -222,7 +222,7 @@ def main(file):
                 # print("commit successful!")
                 itemtotalnum = itemgoodnum + itemfailnum
                 with open(progresstrace,'w+') as progress:
-                    progress.write('('+str(linenum)+'/'+str(linenumtotal)+', '+str(100*float(linenum)/linenumtotal)+'%, '+str(100*float(itemfailnum)/itemtotalnum)+'%'+')')
+                    progress.write('('+str(linenum)+'/'+str(linenumtotal)+', '+str(100*float(linenum)/linenumtotal)+'%, '+str(100*float(itemfailnum)/itemtotalnum)+'%'+')\n')
             finally:
                 # print(text)
                 pass
