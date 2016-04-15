@@ -140,11 +140,7 @@ def main(file):
     m1 = re.compile(r'(<article)|(<inproceedings)|(<proceedings)|(<book)|(<incollection)|(<pdhthesis)|(<masterthesis)|(<www)')
     m2 = re.compile(r'</article|</inproceedings|</proceedings|</book|</incollection|</pdhthesis|</masterthesis|</www')
 
-    in_article = False
-    article = ''
     handler = ArticleHandler(conn)
-    linenum = 0
-
 
     logfile = 'log.txt'
     progresstrace = 'progress.txt'
@@ -153,9 +149,16 @@ def main(file):
         log.write('')
 
     lines = f.readlines()
+
+    linenum = 1
     linenumtotal = len(lines)
     itemgoodnum = 0
     itemfailnum = 0
+
+    in_article = False
+
+    article = ''
+    
     for l in lines:
         linenum += 1
         if not in_article:
