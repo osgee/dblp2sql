@@ -71,6 +71,13 @@ entities = {
     '&yacute;':'&#253;',
     '&thorn;':'&#254;',
     '&yuml;':'&#255;',
+
+    '&amp;':'&amp;',
+    '&nbsp;':'&nbsp;',
+    '&lt;':'&lt;',
+    '&gt;':'&gt;',
+    '&apos;':'&apos;',
+    '&qout;':'&qout;'
 }
 
 # article 0
@@ -148,13 +155,13 @@ def main(file):
     linenumtotal = len(lines)
     itemgoodnum = 0
     itemfailnum = 0
-    itemtotalnum = 0
     for l in lines:
         linenum += 1
         if not in_article:
             article = ''
         if m1.search(l):
             # print(l)
+            article = '<?xml version="1.0" encoding="iso-8859-1" ?>\n<!DOCTYPE dblp SYSTEM "dblp.dtd">'
             in_article = True
         if in_article:
             article = article + l
@@ -210,8 +217,10 @@ def main(file):
             else:
                 # print("commit successful!")
                 itemtotalnum = itemgoodnum + itemfailnum
-                print('('+str(linenum)+'/'+str(linenumtotal)+', '+str(100*float(linenum)/linenumtotal)+'%, '+str(float(itemfailnum/itemtotalnum))+')')
+                print('('+str(linenum)+'/'+str(linenumtotal)+', '+str(100*float(linenum)/linenumtotal)+'%, '+str(100*float(itemfailnum)/itemtotalnum)+'%'+')')
                 pass
+            finally:
+                print(text)
 
     # parseString(data, ArticleHandler(conn))
     f.close()
