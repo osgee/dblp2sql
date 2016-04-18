@@ -173,14 +173,18 @@ def main(file):
         linenum += 1
         if not in_article:
             article = ''
+            articleo = ''
         if m1.search(l):
             article = ''
+            articleo = ''
             in_article = True
         if in_article:
+            articleo = articleo + l
             if m3.search(l):
                 author = l[l.index('>')+1:l.rindex('<')]
                 l = l[:l.index('>')+1]+'###'+author+l[l.rindex('<'):]
             article = article + l
+
         if m2.search(l):
             in_article = False
             text = article
@@ -192,31 +196,31 @@ def main(file):
             except pymysql.err.IntegrityError as e:
                 with open(logfile, 'a+') as log:
                     log.writelines('pymysql.err.IntegrityError: ' + 'at line: ' + str(linenum)+'\n')
-                    log.write(article)
+                    log.write(articleo)
                 itemfailnum+=1
                 # print("commit fail!")
             except AttributeError as e:
                 with open(logfile, 'a+') as log:
                     log.writelines('AttributeError: ' + 'at line: ' + str(linenum) + '\n')
-                    log.write(article)
+                    log.write(articleo)
                 itemfailnum+=1
                 # print("commit fail!")
             except TypeError as e:
                 with open(logfile,'a+') as log:
                     log.writelines('TypeError: ' + ' at line: ' + str(linenum))
-                    log.write(article)
+                    log.write(articleo)
                 itemfailnum+=1
                 # print("commit fail!")
             except _exceptions.SAXParseException as e:
                 with open(logfile, 'a+') as log:
                     log.writelines('_exceptions.SAXParseException:'+e.getMessage()+'; line: '+str(linenum)+'; sline: '+str(e.getLineNumber())+'\n')
-                    log.write(article)
+                    log.write(articleo)
                 itemfailnum+=1
                 # print("commit fail!")
             except _exceptions.SAXNotSupportedException as e:
                 with open(logfile, 'a+') as log:
                     log.writelines('_exceptions.SAXNotSupportedException: ' + e.getMessage() + '; line: ' + str(linenum) + '; sline: ' + str(e.getLineNumber())+'\n')
-                    log.write(article)
+                    log.write(articleo)
                 itemfailnum+=1
                 # print("commit fail!")
             except _exceptions.SAXException as e:
@@ -228,7 +232,7 @@ def main(file):
             except Exception as e:
                 with open(logfile, 'a+') as log:
                     log.writelines('Exception: ' + ' at line: ' + str(linenum) + '\n')
-                    log.write(article)
+                    log.write(articleo)
                 itemfailnum+=1
                 # print("commit fail!")
             else:
