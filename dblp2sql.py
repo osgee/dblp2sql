@@ -195,11 +195,11 @@ def main(file):
                     log.write(article)
                 itemfailnum+=1
                 # print("commit fail!")
-            # except AttributeError as e:
-            #     with open(logfile, 'a+') as log:
-            #         log.writelines('AttributeError: ' + 'at line: ' + str(linenum) + '\n')
-            #         log.write(article)
-            #     itemfailnum+=1
+            except AttributeError as e:
+                with open(logfile, 'a+') as log:
+                    log.writelines('AttributeError: ' + 'at line: ' + str(linenum) + '\n')
+                    log.write(article)
+                itemfailnum+=1
                 # print("commit fail!")
             except TypeError as e:
                 with open(logfile,'a+') as log:
@@ -225,11 +225,11 @@ def main(file):
                     log.write(article)
                 itemfailnum+=1
                 # print("commit fail!")
-            # except Exception as e:
-            #     with open(logfile, 'a+') as log:
-            #         log.writelines('Exception: ' + ' at line: ' + str(linenum) + '\n')
-            #         log.write(article)
-            #     itemfailnum+=1
+            except Exception as e:
+                with open(logfile, 'a+') as log:
+                    log.writelines('Exception: ' + ' at line: ' + str(linenum) + '\n')
+                    log.write(article)
+                itemfailnum+=1
                 # print("commit fail!")
             else:
                 # print("commit successful!")
