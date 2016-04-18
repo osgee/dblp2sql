@@ -7,6 +7,7 @@ from models import Article
 
 
 entities = {
+
     '&Agrave;':'&#192;',
     '&Aacute;':'&#193;',
     '&Acirc;':'&#194;',
@@ -72,12 +73,7 @@ entities = {
     '&thorn;':'&#254;',
     '&yuml;':'&#255;',
 
-    '&amp;':'&amp;',
-    '&nbsp;':'&nbsp;',
-    '&lt;':'&lt;',
-    '&gt;':'&gt;',
-    '&apos;':'&apos;',
-    '&qout;':'&qout;'
+
 }
 
 # article 0
@@ -93,16 +89,17 @@ aattrs = ['mdate','key','reviewid','rating']
 afieldss = ['author','journal','publtype','editer','title','booktitle','pages','address','url','ee','publisher']
 afieldsd = ['year','volume','number','month']
 
-
 class ArticleHandler(handler.ContentHandler):
-    def __init__(self,conn):
+    def __init__(self, conn):
         self.conn = conn
         self.current_tag = ''
         self.in_quote = False
 
+
     def startElement(self, name, attrs):
         if name in atypes.keys():
             self.article = Article(self.conn)
+            self.article.is_entity = False
             self.article.arttype = atypes[name]
             for aname, acon in attrs.items():
                 if aname in aattrs:
@@ -118,9 +115,22 @@ class ArticleHandler(handler.ContentHandler):
     def characters(self, content):
         if self.in_quote and self.current_tag in afieldss:
             if self.current_tag == 'author':
-                self.article.authors.append(content)
+                if content.startswith('###'):
+                    new_author = True
+                    content = content[3:]
+                else:
+                    new_author = False
+                if new_author:
+                    self.article.authors.append(content)
+                else:
+                    au = self.article.authors.pop(len(self.article.authors)-1)
+                    au += content
+                    self.article.authors.append(au)
             else:
-                setattr(self.article, self.current_tag, content)
+                if hasattr(self.article, self.current_tag) and getattr(self.article, self.current_tag) != 'null':
+                    setattr(self.article, self.current_tag, getattr(self.article, self.current_tag)+content)
+                else:
+                    setattr(self.article, self.current_tag, content)
         elif self.in_quote and self.current_tag in afieldsd:
             setattr(self.article, self.current_tag, content)
 
@@ -128,7 +138,6 @@ class ArticleHandler(handler.ContentHandler):
 
 
 def main(file):
-
 
     conn = pymysql.connect(host='localhost', port=3306,user='user',password='password',db='dblp')
     cur = conn.cursor()
@@ -139,6 +148,7 @@ def main(file):
     # print(data)
     m1 = re.compile(r'(<article)|(<inproceedings)|(<proceedings)|(<book)|(<incollection)|(<pdhthesis)|(<masterthesis)|(<www)')
     m2 = re.compile(r'</article|</inproceedings|</proceedings|</book|</incollection|</pdhthesis|</masterthesis|</www')
+    m3 = re.compile(r'<author>')
 
     handler = ArticleHandler(conn)
 
@@ -164,15 +174,18 @@ def main(file):
         if not in_article:
             article = ''
         if m1.search(l):
-            # print(l)
-            article = '<?xml version="1.0" encoding="iso-8859-1" ?>\n<!DOCTYPE dblp SYSTEM "dblp.dtd">\n'
+            article = ''
             in_article = True
         if in_article:
+            if m3.search(l):
+                author = l[l.index('>')+1:l.rindex('<')]
+                l = l[:l.index('>')+1]+'###'+author+l[l.rindex('<'):]
             article = article + l
         if m2.search(l):
             in_article = False
-            text = saxutils.unescape(article, entities=entities)
-            # parseString(text, handler)
+            text = article
+            for key in entities.keys():
+                text = text.replace(key, entities[key])
             try:
                 parseString(text, handler)
                 itemgoodnum+=1
@@ -182,11 +195,11 @@ def main(file):
                     log.write(article)
                 itemfailnum+=1
                 # print("commit fail!")
-            except AttributeError as e:
-                with open(logfile, 'a+') as log:
-                    log.writelines('AttributeError: ' + 'at line: ' + str(linenum) + '\n')
-                    log.write(article)
-                itemfailnum+=1
+            # except AttributeError as e:
+            #     with open(logfile, 'a+') as log:
+            #         log.writelines('AttributeError: ' + 'at line: ' + str(linenum) + '\n')
+            #         log.write(article)
+            #     itemfailnum+=1
                 # print("commit fail!")
             except TypeError as e:
                 with open(logfile,'a+') as log:
@@ -212,11 +225,11 @@ def main(file):
                     log.write(article)
                 itemfailnum+=1
                 # print("commit fail!")
-            except Exception as e:
-                with open(logfile, 'a+') as log:
-                    log.writelines('Exception: ' + ' at line: ' + str(linenum) + '\n')
-                    log.write(article)
-                itemfailnum+=1
+            # except Exception as e:
+            #     with open(logfile, 'a+') as log:
+            #         log.writelines('Exception: ' + ' at line: ' + str(linenum) + '\n')
+            #         log.write(article)
+            #     itemfailnum+=1
                 # print("commit fail!")
             else:
                 # print("commit successful!")
